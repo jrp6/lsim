@@ -1,4 +1,6 @@
 -- lsim - läpsy simulator - Juho Rinta-Paavola 2015
+import System.Random
+
 data Suit = Club | Diamond | Heart | Spade
           deriving (Read, Show, Enum, Eq, Ord)
 data CardValue = Two | Three | Four | Five | Six | Seven | Eight | Nine | Ten | Jack | Queen | King | Ace
@@ -18,4 +20,9 @@ instance Enum Card where
 type Deck = [Card]
 
 deck :: Deck
-deck = [Card value suit | value <- [Two..Ace], suit <- [Club..Spade]]
+deck = [Card value suit | value <- [Two .. Ace], suit <- [Club .. Spade]]
+
+mixedDeck :: Int -> Deck
+mixedDeck seed = map toEnum random52
+  where random52 = take 52 $ randomRs (0,51) gen
+        gen      = mkStdGen seed
