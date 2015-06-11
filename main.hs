@@ -74,6 +74,8 @@ playRound hands table g roundNo playerNo
   | checkFaceCardFall table == True =
     playRound (appendTabletoPlayer prevPlayer) [] g nextRound prevPlayer
     --TODO: Face cards require the next player to use multiple cards at once
+  | null $ hands !! playerNo =
+    playRound hands table g roundNo nextPlayer
   | otherwise =
     playRound (removePlayerCard playerNo) (cardToPlay:table) g nextRound nextPlayer
   where n                      = length hands
