@@ -33,6 +33,8 @@ isFaceCard Card {value=King}  = True
 isFaceCard Card {value=Ace}   = True
 isFaceCard _                  = False
 
+isNotFaceCard = not.isFaceCard
+
 type Deck = [Card]
 
 deck :: Deck
@@ -50,17 +52,35 @@ deal deck n
   | otherwise = thisHand:(deal (deck \\ thisHand) (n-1))
   where thisHand = deck ?? [0,n .. (length deck)-1]
 
+checkFaceCardFall :: Deck -> Bool
+checkFaceCardFall table
+  | (length table >= 2) && value (table !! 1) == Jack  && first1NotFace = True
+  | (length table >= 3) && value (table !! 2) == Queen && first2NotFace = True
+  | (length table >= 4) && value (table !! 3) == King  && first3NotFace = True
+  | (length table >= 5) && value (table !! 4) == Ace   && first4NotFace = True
+  | otherwise                                    = False
+  where first1NotFace = isNotFaceCard $ head table
+        first2NotFace = first1NotFace && (isNotFaceCard $ table !! 1)
+        first3NotFace = first2NotFace && (isNotFaceCard $ table !! 2)
+        first4NotFace = first3NotFace && (isNotFaceCard $ table !! 3)
+    
+
 playRound :: [Deck] -> Deck -> StdGen -> Integer -> Int -> Integer
 playRound hands table g roundNo playerNo
-  | length (filter (not.null) hands) == 1 = roundNo
+  | length (filter (not.null) hands) == 1 =
+    roundNo
   | (length table) >= 2 && value (head table) == value (table !! 1) =
     playRound (appendTabletoPlayer rand) [] nextG nextRound rand
+  | checkFaceCardFall table == True =
+    playRound (appendTabletoPlayer prevPlayer) [] g nextRound prevPlayer
+    --TODO: Face cards require the next player to use multiple cards at once
   | otherwise =
-    playRound (removePlayerCard playerNo) ((head $ hands !! playerNo):table) g nextRound nextPlayer
+    playRound (removePlayerCard playerNo) (cardToPlay:table) g nextRound nextPlayer
   where n                      = length hands
         (rand,nextG)           = randomR (0,n-1) g
         appendTabletoPlayer pl = replaceIndex hands pl $ (hands !! pl) ++ (reverse table)
         removePlayerCard pl    = replaceIndex hands pl $ tail $ hands !! pl
+        cardToPlay             = head $ hands !! playerNo
         prevPlayer             = (playerNo + n-1) `rem` n
         nextRound              = roundNo + 1
         nextPlayer             = (playerNo + 1) `rem` n
