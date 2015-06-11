@@ -53,14 +53,15 @@ deal deck n
 playRound :: [Deck] -> Deck -> StdGen -> Integer -> Int -> Integer
 playRound hands table g roundNo playerNo
   | length (filter (not.null) hands) == 1 = roundNo
-  | (length table) >= 2 && value (last table) == value (last $ init table) =
+  | (length table) >= 2 && value (head table) == value (table !! 1) =
     playRound (appendTabletoPlayer rand) [] nextG nextRound rand
   | otherwise =
-    playRound (removePlayerCard playerNo) (table ++ [head $ hands !! playerNo]) g nextRound nextPlayer
+    playRound (removePlayerCard playerNo) ((head $ hands !! playerNo):table) g nextRound nextPlayer
   where n                      = length hands
         (rand,nextG)           = randomR (0,n-1) g
-        appendTabletoPlayer pl = replaceIndex hands pl $ (hands !! pl) ++ table
+        appendTabletoPlayer pl = replaceIndex hands pl $ (hands !! pl) ++ (reverse table)
         removePlayerCard pl    = replaceIndex hands pl $ tail $ hands !! pl
+        prevPlayer             = (playerNo + n-1) `rem` n
         nextRound              = roundNo + 1
         nextPlayer             = (playerNo + 1) `rem` n
 
