@@ -26,6 +26,13 @@ instance Enum Card where
   toEnum n = let (v,s) = n `quotRem` 4 in Card (toEnum v) (toEnum s)
   fromEnum c = fromEnum (value c) * 4 + fromEnum (suit c)
 
+isFaceCard :: Card -> Bool
+isFaceCard Card {value=Jack}  = True
+isFaceCard Card {value=Queen} = True
+isFaceCard Card {value=King}  = True
+isFaceCard Card {value=Ace}   = True
+isFaceCard _                  = False
+
 type Deck = [Card]
 
 deck :: Deck
