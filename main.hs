@@ -64,6 +64,10 @@ checkFaceCardFall table
         first3NotFace = first2NotFace && (isNotFaceCard $ table !! 2)
         first4NotFace = first3NotFace && (isNotFaceCard $ table !! 3)
     
+play :: Deck -> Int -> Int -> Integer
+play deck playerCount seed = playRound hands [] g 0 0
+  where hands = deal deck playerCount
+        g = mkStdGen seed
 
 playRound :: [Deck] -> Deck -> StdGen -> Integer -> Int -> Integer
 playRound hands table g roundNo playerNo
