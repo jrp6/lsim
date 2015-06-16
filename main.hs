@@ -58,7 +58,7 @@ checkFaceCardFall table
   | (length table >= 3) && value (table !! 2) == Queen && first2NotFace = True
   | (length table >= 4) && value (table !! 3) == King  && first3NotFace = True
   | (length table >= 5) && value (table !! 4) == Ace   && first4NotFace = True
-  | otherwise                                    = False
+  | otherwise                                                           = False
   where first1NotFace = isNotFaceCard $ head table
         first2NotFace = first1NotFace && (isNotFaceCard $ table !! 1)
         first3NotFace = first2NotFace && (isNotFaceCard $ table !! 2)
